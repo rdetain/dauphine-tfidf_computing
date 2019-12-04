@@ -8,7 +8,7 @@ University : Paris Dauphine
 Considering the problem of calculating the TF-IDF score for each (word, document) couple in a set of documents, I performed an experimental analysis in order to compare performances (execution time) of 3 different methods :
 
 - tf-idf calculation using scikitlearn library,
-- tf-idf calculation using MapReduce Hadoop Streaming,
+- tf-idf calculation using Hadoop Streaming,
 - tf-idf calculation using Spark.
 
 A basic NLP pre-processing has been performed within each of these methods :
@@ -53,6 +53,19 @@ for i in range(0,54):
   listdoc.append(listlemma)
 ```
 
+TF-IDF calculation
+```
+%time 
+def dummy_fun(doc): 
+  return doc 
+  
+tfidf_vectorizer = TfidfVectorizer(
+  analyzer='word',
+  tokenizer=dummy_fun,
+  preprocessor=dummy_fun,
+  token_pattern=None)
+  
+tfidf = tfidf_vectorizer.fit_transform(listdoc)
+```
 
-
-
+## Using Hadoop Streaming
