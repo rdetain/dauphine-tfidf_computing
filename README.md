@@ -20,7 +20,7 @@ A basic NLP pre-processing has been performed within each of these methods :
 I used a set of 54 documents. Each document is a chapter of JRR Tolkien's *Lord of the Rings*. 
 
 
-## Using scikitlearn
+## Using Scikitlearn
 Stop-words list creation
 ```
 stop_words = list(set(stopwords.words('english'))) + list ({',','.','-',';',':','(',')','?','-PRON-','!',' '})
