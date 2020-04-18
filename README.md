@@ -72,6 +72,8 @@ tfidf = tfidf_vectorizer.fit_transform(listdoc)
 
 For this part, I created 2 different scripts : one **mapper** and one **reducer**.
 
+Both scripts are commented here below.
+
 Mapper
 
 ```
