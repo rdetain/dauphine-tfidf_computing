@@ -74,7 +74,7 @@ For this part, I created 2 different scripts : one **mapper** and one **reducer*
 
 Both scripts are commented here below.
 
-Mapper
+*Mapper*
 
 ```
 words=[]
@@ -116,3 +116,6 @@ for word in words:
 	print("%s,%i\t%i\t%i\t%i" % (word,doc_id,wordcount,wordcount_per_doc, df_t))
 
 ```
+
+*Reducer*
+
