@@ -69,7 +69,7 @@ tfidf = tfidf_vectorizer.fit_transform(listdoc)
 ```
 Results
 
-Execution time for this script was **52sec**. It has been performed using a Macbook Pro with the tech specs below :
+Execution time for this script was **52 sec**. It has been performed using a Macbook Pro with the tech specs below :
 
 - 2,4 GHz Intel Core i5
 - 8 Go 1333 MHz DDR3
@@ -172,10 +172,10 @@ for word_block in words:
 	word,docid,wordcount,wordcount_per_doc,df_t = word_block[0][0],int(word_block[0][1]),int(word_block[1]),int(word_block[2]),int(word_block[3])
 	# return, for each word, the final df_t
 	df_t = len(df_t_dict[word])
-	# 6. TF-IDF calculation = wordcount x wordcount_per_doc x log10(N/df_t)
+	# TF-IDF calculation = wordcount x wordcount_per_doc x log10(N/df_t)
 	word_block.append(wordcount * wordcount_per_doc * log10(N/df_t))
 	TFIDF = word_block[4]
-	# 7. ***OUTPUT DATA*** | ((word, doc_ID), TF-IDF) on each line of stdout
+	# ***OUTPUT DATA*** | ((word, doc_ID), TF-IDF) on each line of stdout
 	key_formated = '{:_<30}'.format("%s,%i" % (word,docid))
 	print("%s\t%i\t%i\t%i\t%.*f" % (key_formated,wordcount,wordcount_per_doc,df_t,5,TFIDF))
 
@@ -185,3 +185,9 @@ for docid in docid_list:
     words_top20_tfidf = sorted([word_block for word_block in words if word_block[0][1] == docid], key=lambda x: x[4], reverse=True)[:20]
     print(words_top20_tfidf)
 ```
+
+Results
+
+Execution time for both scripts was **27 sec**, using Hadoop Streaming through the cluster of Paris Dauphine University.
+
+## Using Hadoop Streaming
