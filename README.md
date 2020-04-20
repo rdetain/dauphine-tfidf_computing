@@ -306,3 +306,8 @@ Execution time for this script was **5.41 sec**, using Databricks.
 
 ## Final Results
 
+| Method  | Wall Time (sec) |
+| ------------- | ------------- |
+| Scikitlearn  | 52 |
+| Hadoop Streaming  | 27  |
+| Spark  | 5.41  |
