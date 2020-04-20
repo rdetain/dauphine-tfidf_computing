@@ -302,7 +302,7 @@ Chapter Word TF-IDF Score
 
 Results
 
-Execution time for this script was **5.41 sec**, using Databricks.
+Execution time for this script was **5 sec**, using Databricks.
 
 ## Final Results
 
@@ -310,4 +310,4 @@ Execution time for this script was **5.41 sec**, using Databricks.
 | ------------- | ------------- |
 | Scikitlearn  | 52 |
 | Hadoop Streaming  | 27  |
-| Spark  | 5.41  |
+| Spark  | 5 |
