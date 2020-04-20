@@ -191,3 +191,109 @@ Results
 Execution time for both scripts was **27 sec**, using Hadoop Streaming through the cluster of Paris Dauphine University.
 
 ## Using Hadoop Streaming
+
+PySpark Script
+
+Here above the steps followed within the PySpark script I built :
+
+- Load txt files into a dataframe
+- Tokenize words of each document
+- Term frequency in each document
+- Term frequency in the whole corpus of documents
+- TF-IDF calculation for each word
+- Sort results by score
+
+```
+import numpy as np
+from __future__ import division
+from pyspark.sql import SQLContext, Row
+
+## Load txt files into a dataframe
+
+lordofthering = sc.wholeTextFiles("/FileStore/tables/lordofthering/").map(lambda x : (x[0].replace('dbfs:/FileStore/tables/lordofthering/',''), x[1]) ).toDF(["chapter","text"])
+
+## Tokenize words of each document
+
+from itertools import islice
+
+def take(n, iterable):
+    "Return first n items of the iterable as a list"
+    return list(islice(iterable, n))
+  
+# tokenize text to words.
+import re
+def tokenize(s):
+  return re.split("\\W+", s.lower())
+
+tokenized_text = lordofthering.rdd.map(lambda x : (x[0], tokenize(x[1])) )
+print(tokenized_text.take(1))
+
+Beginning of the list obtained :
+[('0.txt', ['prologue', '1', 'concerning', 'hobbits', 'this', 'book', 'is', 'largely', 'concerned', 'with', 'hobbits', 'and', 'from', 'its', 'pages', 'a', 'reader', 'may', 'discover', 'much', 'of', 'their', 'character', 'and', 'a', 'little', 'of', 'their', 'history', 'further', 'information', 'will', 'also', 'be', 'found', 'in', 'the', 'selection', 'from', 'the', 'red', 'book', 'of', 'westmarch'
+
+## TERM FREQUENCY
+# term frequencies in each document
+term_frequency = tokenized_text.flatMapValues(lambda x: x).countByValue()
+print(take(10, term_frequency.items()))
+
+[(('52.txt', 'pelennor'), 1), (('39.txt', 'silence'), 2), (('54.txt', 'found'), 2), (('48.txt', 'riders'), 2), (('44.txt', 'gurgling'), 1), (('34.txt', 'pursuing'), 1), (('29.txt', 'eighteen'), 2), (('19.txt', 'companions'), 10), (('17.txt', 'mortals'), 1), (('40.txt', 'man'), 31)] CPU times: user 104 ms, sys: 12.1 ms, total: 117 ms Wall time: 1.65 s
+
+
+## DOCUMENT FREQUENCY
+#count how many documents a word appears in.
+document_frequency = tokenized_text.flatMapValues(lambda x: x).distinct()\
+                        .filter(lambda x: x[1] != '')\
+                        .map(lambda x: (x[1],x[0])).countByKey()
+document_frequency.items()
+take(10, document_frequency.items())
+
+## TF-IDF
+
+def tf_idf(N, tf, df):
+    result = []
+    for key, value in tf.items():
+        doc = key[0]
+        term = key[1]
+        df = document_frequency[term]
+        if (df>0):
+          tf_idf = float(value)*np.log(N/df)
+        
+        result.append({"doc":doc, "term":term, "score":tf_idf})
+    return result
+
+tf_idf_output = tf_idf(number_of_chapter, term_frequency, document_frequency)
+
+print("{:20s} {:20s} {:15s}".format("Chapter", "Word", "TF-IDF Score")) 
+print("{:20s} {:20s} {:15s}".format("----------------", "----------------", "----------------")) 
+[print("{:20s} {:20s} {:3.6f}".format(item['doc'],item['term'],item['score'])) for item in tf_idf_output[0:10]]
+
+Chapter Word TF-IDF Score 
+---------------- ---------------- ---------------- 
+52.txt pelennor 1.810109 
+39.txt silence 0.401341 
+54.txt found 0.074083 
+48.txt riders 0.792831 
+44.txt gurgling 1.810109 
+34.txt pursuing 2.061423 
+29.txt eighteen 5.242078 
+19.txt companions 4.519851 
+17.txt mortals 2.908721 
+40.txt man 8.359571 
+
+## Sort results by max score
+print("{:20s} {:20s} {:15s}".format("Chapter", "Word", "TF-IDF Score")) 
+print("{:20s} {:20s} {:15s}".format("----------------", "----------------", "----------------")) 
+[print("{:20s} {:20s} {:3.6f}".format(item['doc'],item['term'],item['score'])) for item in sorted(tf_idf_output, key = lambda i: i['score'] ,reverse=True) [0:10]]
+
+Chapter Word TF-IDF Score 
+---------------- ---------------- ---------------- 
+20.txt ugl 154.162208 
+21.txt treebeard 146.361036 
+20.txt k 138.915058 
+4.txt ruffians 127.983719 
+21.txt ents 104.986299 
+20.txt grishn 
+99.425580 20.txt kh 99.425580 
+4.txt cotton 98.896510 
+7.txt tom 88.300739 
+30.txt gollum 78.904871 
