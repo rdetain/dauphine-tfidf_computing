@@ -297,3 +297,12 @@ Chapter Word TF-IDF Score
 4.txt cotton 98.896510 
 7.txt tom 88.300739 
 30.txt gollum 78.904871 
+
+```
+
+Results
+
+Execution time for this script was **5.41 sec**, using Databricks.
+
+## Final Results
+
